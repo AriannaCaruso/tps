@@ -84,14 +84,14 @@
       if (n1 === "" || n2 === "" || n3 === "" || n4 === "" ||
           n1 < 0 || n1 > 255 || n2 < 0 || n2 > 255 ||
           n3 < 0 || n3 > 255 || n4 < 0 || n4 > 255) {
-        risultato.textContent = "⚠️ Inserisci numeri validi tra 0 e 255 in tutti i campi.";
+        risultato.textContent = "Inserisci numeri validi tra 0 e 255 in tutti i campi.";
         risultato.style.color = "red";
         subnet.textContent = "";
         return;
       }
       if (prefix === "" || prefix < 0 || prefix > 36) {
         risultato.textContent = "";
-        subnet.textContent = "⚠️ Inserisci un prefisso valido tra 0 e 36.";
+        subnet.textContent = "Inserisci un prefisso valido tra 0 e 36.";
         subnet.style.color = "red";
         return;
       }
