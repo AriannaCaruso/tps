@@ -90,7 +90,7 @@
         subnet.textContent = "";
         return;
       }
-      if (prefix === "" || prefix < 0 || prefix > 36) {
+      if (prefix === "" || prefix < 0 || prefix > 32) {
         risultato.textContent = "";
         subnet.textContent = "Inserisci un prefisso valido tra 0 e 36.";
         subnet.style.color = "red";
