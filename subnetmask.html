@@ -57,7 +57,7 @@
 </head>
 <body>
   <div class="rettangolo">
-    <h2>Convertitore Decimale → Binario (4 ottetti da 8 bit)</h2>
+    <h2>Convertitore Decimale - Binario (4 ottetti da 8 bit)</h2>
     <p>Inserisci quattro numeri tra 0 e 255.</p>
     <div>
       <input type="number" id="num1" min="0" max="255" placeholder="Numero 1">
@@ -67,7 +67,7 @@
     </div>
     <p>Inserisci il prefisso (es. 22)</p>
     <div>
-      <input type="number" id="prefix" min="0" max="32" placeholder="Prefisso (max 32)">
+      <input type="number" id="prefix" min="8" max="31" placeholder="Prefisso (8-31)">
       <button onclick="convertiConSubnet()">Converti</button>
     </div>
     <div id="risultatoMultiplo"></div>
@@ -90,9 +90,9 @@
         subnet.textContent = "";
         return;
       }
-      if (prefix === "" || prefix < 0 || prefix > 32) {
+      if (prefix === "" || prefix < 8 || prefix > 31) {
         risultato.textContent = "";
-        subnet.textContent = "Inserisci un prefisso valido tra 0 e 36.";
+        subnet.textContent = "Inserisci un prefisso valido tra 8 e 31.";
         subnet.style.color = "red";
         return;
       }
