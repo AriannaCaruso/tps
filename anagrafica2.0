@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anagrafica 2.0</title>
+    <style>
+        body {
+            background-color: #b9b9b9;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .rettangolo {
+            background-color: #3a3a3a;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin: 15px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            width: 500px;
+        }
+        header {
+            background-color: #2b2b2b;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0%;
+        }
+    
+        .output {
+            background-color: #4a4a4a;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin: 15px;
+            width: 500px;
+            text-align: left;
+        }
+
+        .checkbox-group {
+            text-align: left;
+            margin: 5px 0;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1 class="bold">Anagrafica 2.0</h1>
+    </header>
+
+    <div class="rettangolo">
+        <p class="bold">Si richiede all'utente di inserire i seguenti dati personali:</p>
+        
+        <p class="bold">Nome:</p>
+        <input type="text" id="nomeInput">
+
+        <p class="bold">Cognome:</p>
+        <input type="text" id="cognomeInput">
+
+        <p class="bold">Indirizzo:</p>
+        <input type="text" id="indirizzoInput">
+
+        <p class="bold">CAP:</p>
+        <input type="text" id="capInput">
+
+        <p class="bold">Età:</p>
+        <input type="text" id="etàInput">
+        <p id="generazioneOutput"></p>
+
+        <p class="bold">Inserire il proprio sesso:</p>
+        
+        <div class="checkbox-group">
+            <input type="radio" name="sesso" value="Uomo"> Uomo<br>
+            <input type="radio" name="sesso" value="Donna"> Donna<br>
+            <input type="radio" name="sesso" value="Altro"> Altro<br>
+        </div>
+
+        <p class="bold">Inserire di quali veicoli si è in possesso:</p>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" value="Bicicletta" onclick="onClickHandler(this);"> Bicicletta<br>
+            <input type="checkbox" value="Automobile" onclick="onClickHandler(this);"> Automobile<br>
+            <input type="checkbox" value="Barca" onclick="onClickHandler(this);"> Barca<br>
+            <input type="checkbox" value="Monopattino" onclick="onClickHandler(this);"> Monopattino<br>
+            <input type="checkbox" value="Hoverboard" onclick="onClickHandler(this);"> Hoverboard<br>
+            <input type="checkbox" value="Moto" onclick="onClickHandler(this);"> Moto<br>
+        </div>
+
+        <p class="bold">Inserire di quali sport si pratica:</p>
+        
+        <div class="checkbox-group">
+            <input type="checkbox" value="Calcio" onclick="onClickSport(this);"> Calcio<br>
+            <input type="checkbox" value="Basket" onclick="onClickSport(this);"> Basket<br>
+            <input type="checkbox" value="Nuoto" onclick="onClickSport(this);"> Nuoto<br>
+            <input type="checkbox" value="Pallavolo" onclick="onClickSport(this);"> Pallavolo<br>
+            <input type="checkbox" value="Atletica" onclick="onClickSport(this);"> Atletica<br>
+        </div>
+
+        <p class="bold">Provincia:</p>
+        
+        <select id="prov" onchange="Validate()">
+            <option value="0">Seleziona</option>
+            <option value="1">Milano</option>
+            <option value="2">Pavia</option>
+            <option value="3">Roma</option>
+            <option value="4">Napoli</option>
+            <option value="5">Palermo</option>
+            <option value="6">Torino</option>
+            <option value="7">Firenze</option>
+            <option value="8">Bologna</option>
+        </select>
+
+        <p class="bold">Comune:</p>
+
+        <select id="comMI" style="display:none">
+            <option value="0">Seleziona</option>
+            <option value="Rho">Rho</option>
+            <option value="Lainate">Lainate</option>
+            <option value="Parabiago">Parabiago</option>
+        </select>
+
+        <select id="comPV" style="display:none">
+            <option value="0">Seleziona</option>
+            <option value="Vigevano">Vigevano</option>
+            <option value="Zavattarello">Zavattarello</option>
+            <option value="Godiasco">Godiasco</option>
+        </select>
+
+        <select id="comRM" style="display:none">
+            <option value="0">Seleziona</option>
+            <option value="Roma">Roma</option>
+            <option value="Tivoli">Tivoli</option>
+            <option value="Civitavecchia">Civitavecchia</option>
+        </select>
+
+        <select id="comNA" style="display:none">
+            <option value="0">Seleziona</option>
+            <option value="Napoli">Napoli</option>
+            <option value="Pozzuoli">Pozzuoli</option>
+            <option value="Giugliano">Giugliano</option>
+        </select>
+
+        <select id="comPA" style="display:none">
+            <option value="0">Seleziona</option>
+            <option value="Palermo">Palermo</option>
+            <option value="Bagheria">Bagheria</option>
+            <option value="Monreale">Monreale</option>
+        </select>
+
+        <select id="comTO" style="display:none">
+            <option value="0">Seleziona</option>
+            <option value="Torino">Torino</option>
+            <option value="Moncalieri">Moncalieri</option>
+            <option value="Rivoli">Rivoli</option>
+        </select>
+
+        <select id="comFI" style="display:none">
+            <option value="0">Seleziona</option>
+            <option value="Firenze">Firenze</option>
+            <option value="Prato">Prato</option>
+            <option value="Scandicci">Scandicci</option>
+        </select>
+
+        <select id="comBO" style="display:none">
+            <option value="0">Seleziona</option>
+            <option value="Bologna">Bologna</option>
+            <option value="Imola">Imola</option>
+            <option value="Casalecchio di Reno">Casalecchio di Reno</option>
+        </select>
+
+        <br><br>
+        <button onclick="mostraTutto()">Mostra Dati Completi</button>
+    </div>
+
+    <div class="output" id="rettangoloOutput">
+        <h2>Dati Inseriti:</h2>
+        <p id="outNome"></p>
+        <p id="outCognome"></p>
+        <p id="outIndirizzo"></p>
+        <p id="outCAP"></p>
+        <p id="outEtà"></p>
+        <p id="outGenerazione"></p>
+        <p id="outSesso"></p>
+        <p id="outVeicoli"></p>
+        <p id="outSport"></p>
+        <p id="outProvincia"></p>
+        <p id="outComune"></p>
+    </div>
+
+    <script>
+        let veicoliSelezionati = [];
+        let sportSelezionati = [];
+
+        function Validate() {
+            let provincia = document.getElementById("prov").value;
+
+            document.getElementById("comMI").style.display = "none";
+            document.getElementById("comPV").style.display = "none";
+            document.getElementById("comRM").style.display = "none";
+            document.getElementById("comNA").style.display = "none";
+            document.getElementById("comPA").style.display = "none";
+            document.getElementById("comTO").style.display = "none";
+            document.getElementById("comFI").style.display = "none";
+            document.getElementById("comBO").style.display = "none";
+
+            if (provincia == 1) {
+                document.getElementById("comMI").style.display = "inline-block";
+            }
+            else if (provincia == 2) {
+                document.getElementById("comPV").style.display = "inline-block";
+            }
+            else if (provincia == 3) {
+                document.getElementById("comRM").style.display = "inline-block";
+            }
+            else if (provincia == 4) {
+                document.getElementById("comNA").style.display = "inline-block";
+            }
+            else if (provincia == 5) {
+                document.getElementById("comPA").style.display = "inline-block";
+            }
+            else if (provincia == 6) {
+                document.getElementById("comTO").style.display = "inline-block";
+            }
+            else if (provincia == 7) {
+                document.getElementById("comFI").style.display = "inline-block";
+            }
+            else if (provincia == 8) {
+                document.getElementById("comBO").style.display = "inline-block";
+            }
+        }
+
+        function onClickHandler(checkbox) {
+            let valore = checkbox.value;
+            if (checkbox.checked) veicoliSelezionati.push(valore);
+            else veicoliSelezionati = veicoliSelezionati.filter(v => v !== valore);
+        }
+
+        function onClickSport(checkbox) {
+            let valore = checkbox.value;
+            if (checkbox.checked) sportSelezionati.push(valore);
+            else sportSelezionati = sportSelezionati.filter(s => s !== valore);
+        }
+
+        function mostraTutto() {
+            let nome = document.getElementById("nomeInput").value;
+            let cognome = document.getElementById("cognomeInput").value;
+            let indirizzo = document.getElementById("indirizzoInput").value;
+            let cap = document.getElementById("capInput").value;
+            let età = document.getElementById("etàInput").value;
+
+            let anno = 2025 - parseInt(età);
+            let generazione;
+
+            if (anno >= 1901 && anno <= 1927) generazione = "Greatest Generation";
+            else if (anno >= 1928 && anno <= 1945) generazione = "Generazione Silenziosa";
+            else if (anno >= 1946 && anno <= 1964) generazione = "Baby Boomers";
+            else if (anno >= 1965 && anno <= 1980) generazione = "Generazione X";
+            else if (anno >= 1981 && anno <= 1996) generazione = "Millennials";
+            else if (anno >= 1997 && anno <= 2012) generazione = "Generazione Z";
+            else if (anno >= 2013) generazione = "Generazione Alpha";
+            else generazione = "Età non valida";
+
+            document.getElementById("outNome").innerText = "Nome: " + nome;
+            document.getElementById("outCognome").innerText = "Cognome: " + cognome;
+            document.getElementById("outIndirizzo").innerText = "Indirizzo: " + indirizzo;
+            document.getElementById("outCAP").innerText = "CAP: " + cap;
+            document.getElementById("outEtà").innerText = "Età: " + età;
+            document.getElementById("outGenerazione").innerText =
+                generazione === "Età non valida" ? "Età non valida." : "Generazione: " + generazione;
+
+            let radios = document.getElementsByName("sesso");
+            let sesso = "Non selezionato";
+
+            for (let i = 0; i < radios.length; i++) {
+                if (radios[i].checked) {
+                    sesso = radios[i].value;
+                }
+            }
+
+            document.getElementById("outSesso").innerText = "Sesso: " + sesso;
+
+            let testoVeicoli;
+            if (veicoliSelezionati.length > 0) {
+                testoVeicoli = veicoliSelezionati.join(", ");
+            } else {
+                testoVeicoli = "Nessuno";
+            }
+
+            document.getElementById("outVeicoli").innerText = "Veicoli posseduti: " + testoVeicoli;
+
+            let testoSport;
+            if (sportSelezionati.length > 0) {
+                testoSport = sportSelezionati.join(", ");
+            } else {
+                testoSport = "Nessuno";
+            }
+
+            document.getElementById("outSport").innerText = "Sport praticati: " + testoSport;
+
+            let provinciaSel = document.getElementById("prov").value;
+            let provincia;
+
+            if (provinciaSel == 1) {
+                provincia = "Milano";
+            } 
+            else if (provinciaSel == 2) {
+                provincia = "Pavia";
+            } 
+            else if (provinciaSel == 3) {
+                provincia = "Roma";
+            } 
+            else if (provinciaSel == 4) {
+                provincia = "Napoli";
+            } 
+            else if (provinciaSel == 5) {
+                provincia = "Palermo";
+            } 
+            else if (provinciaSel == 6) {
+                provincia = "Torino";
+            } 
+            else if (provinciaSel == 7) {
+                provincia = "Firenze";
+            } 
+            else if (provinciaSel == 8) {
+                provincia = "Bologna";
+            } 
+            else {
+                provincia = "Non selezionata";
+            }
+
+            let comune = "";
+            if (provinciaSel == 1) {
+                comune = document.getElementById("comMI").value;
+            }
+            else if (provinciaSel == 2) {
+                comune = document.getElementById("comPV").value;
+            }
+            else if (provinciaSel == 3) {
+                comune = document.getElementById("comRM").value;
+            }
+            else if (provinciaSel == 4) {
+                comune = document.getElementById("comNA").value;
+            }
+            else if (provinciaSel == 5) {
+                comune = document.getElementById("comPA").value;
+            }
+            else if (provinciaSel == 6) {
+                comune = document.getElementById("comTO").value;
+            }
+            else if (provinciaSel == 7) {
+                comune = document.getElementById("comFI").value;
+            }
+            else if (provinciaSel == 8) {
+                comune = document.getElementById("comBO").value;
+            } 
+            else {
+                comune = "";
+            }
+
+            document.getElementById("outProvincia").innerText = "Provincia: " + provincia;
+            if (comune !== "" && comune !== "0") {
+                document.getElementById("outComune").innerText = "Comune: " + comune;
+            } else {
+                document.getElementById("outComune").innerText = "Comune: Non selezionato";
+            }
+        }
+    </script>
+</body>
+</html>
+
