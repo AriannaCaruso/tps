@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Anagrafica 3.0</title>
+    <style>
+        body {
+            background-color: #b9b9b9;
+            color: white;
+            font-family: sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        .rettangolo {
+            background-color: #3a3a3a;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin: 15px;
+            text-align: center;
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+            width: 500px;
+        }
+
+        .output {
+            background-color: #4a4a4a;
+            border-radius: 12px;
+            padding: 20px 30px;
+            margin-top: 15px;
+            text-align: left;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+
+<div class="rettangolo">
+    <h2>Anagrafica 3.0</h2>
+    Nome: <input id="nome"><br><br>
+    Cognome: <input id="cognome"><br><br>
+    Colore: <input id="colore"><br><br>
+
+    <button onclick="inserisci()">Inserisci</button>
+    <button onclick="mostra()">Mostra</button>
+
+    <div class="output">
+        <pre id="risultato"></pre>
+    </div>
+
+</div>
+
+<script>
+    const persona = [];
+
+    function inserisci() {
+        const oggetto = {
+            nome: document.getElementById("nome").value,
+            cognome: document.getElementById("cognome").value,
+            colore: document.getElementById("colore").value
+        };
+
+        persona.push(oggetto);
+
+        document.getElementById("nome").value = "";
+        document.getElementById("cognome").value = "";
+        document.getElementById("colore").value = "";
+    }
+
+    function mostra() {
+        let testo = "";
+
+        for (let i = 0; i < persona.length; i++) {
+            testo +=
+                "Nome: " + persona[i].nome + "\n" +
+                "Cognome: " + persona[i].cognome + "\n" +
+                "Colore: " + persona[i].colore + "\n\n";
+        }
+
+        document.getElementById("risultato").innerText = testo;
+    }
+</script>
+
+</body>
+</html>
