@@ -1,0 +1,71 @@
+body {
+    background-color: #b9b9b9;
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    min-height: 100vh;
+    margin: 0;
+}
+header {
+    background-color: #2b2b2b;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 15px 0;
+    margin-bottom: 20px;
+}
+.rettangolo {
+    background-color: #3a3a3a;
+    border-radius: 12px;
+    padding: 25px 35px;
+    margin: 20px;
+    text-align: center;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    width: 500px;
+}
+h2 {
+    margin-top: 25px;
+    margin-bottom: 10px;
+}
+input[type="text"],
+input[type="number"],
+select {
+    margin-bottom: 15px;
+    margin-top: 5px;
+}
+.checkbox-group {
+    text-align: left;
+    margin: 10px 0 20px 0;
+}
+.output {
+    background-color: #4a4a4a;
+    border-radius: 12px;
+    padding: 25px 30px;
+    margin: 20px;
+    width: 600px;
+    text-align: left;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+th {
+    padding: 10px;
+    background-color: #2b2b2b;
+    font-weight: bold;
+}
+td {
+    padding: 10px;
+    border-bottom: 1px solid #666;
+}
+.bold {
+    font-weight: bold;
+}
+input[type="button"] {
+    margin: 10px 5px;
+    padding: 8px 15px;
+}
