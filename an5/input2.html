@@ -105,24 +105,24 @@ function salva() {
     let cognome=document.getElementById("cognome").value;
     let email=document.getElementById("email").value;
     let password=document.getElementById("password").value;
-    let nome2=/^[A-Z][a-z]+$/;
-    let cognome2=/^[A-Z][a-z]+$/;
-    let email2=/^([a-zA-Z0-9\._-]+)@([a-zA-Z0-9\.-]+)\.([a-z\.]{2,6})$/;
-    let password2=/^[a-zA-Z0-9_-&]{6,18}$/;
-    if (!nome2.test(nome)) {
-        alert("Il nome contiene caratteri non validi");
+    if (!document.getElementById("nome").value.match(/^[A-Za-z]+$/)) {
+        alert("Nome non valido");
         return;
     }
-    if (!cognome2.test(cognome)) {
-        alert("Il cognome contiene caratteri non validi");
+
+    if (!document.getElementById("cognome").value.match(/^[A-Za-z]+$/)) {
+        alert("Cognome non valido");
         return;
     }
-    if (!email2.test(email)) {
-        alert("L'email non è valida");
+
+   
+    if (!document.getElementById("password").value.match(/^[A-Za-z0-9\-_]+$/)) {
+        alert("Password non valida. Deve contenere solo lettere, numeri, - o _");
         return;
     }
-    if (!password2.test(password)) {
-        alert("La password contiene caratteri non validi");
+
+    if (!document.getElementById("email").value.match(/.+@.+\.[A-Za-z]{2,6}/)) {
+        alert("Email non valida");
         return;
     }
     let dati = localStorage.getItem("elenco");
