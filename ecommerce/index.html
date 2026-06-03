@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iron & Wood - Home</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="style.css">
+    <style>
+        #map {
+            height: 350px;
+            width: 100%;
+            margin-top: 1.5rem;
+            border: 2px solid #c9a227;
+            border-radius: 8px;
+            z-index: 1;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Iron & Wood</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="prodotti.html">Prodotti</a>
+    </nav>
+    <div id="cartIcon" class="cart-icon" onclick="openCart()">🛒<span id="cartCount">0</span></div>
+
+    <section id="noi-slide" class="slide">
+        <h2>Noi</h2>
+        <p>Siamo una piccola azienda specializzata nella rivendita delle migliori chitarre elettriche del mercato. Il nostro obiettivo è riportare in vita l'usato e i prodotti guasti e renderli dei prodotti nuovi di zecca a prezzi accessibili a tutti.</p>
+        <p>Il nostro team è composto da esperti del settore che lavorano con passione per garantire la massima qualità dei nostri prodotti e la soddisfazione dei nostri clienti.</p>
+        <p>Offriamo una vasta gamma di chitarre elettriche, dalle più moderne alle più classiche, tutte accuratamente selezionate e testate per garantire la massima qualità.</p>
+        <p>Inoltre, offriamo un servizio di assistenza post-vendita per garantire che i nostri clienti siano sempre soddisfatti dei loro acquisti.</p>
+        <p>Se stai cercando una chitarra elettrica di alta qualità a un prezzo accessibile, sei nel posto giusto. Esplora il nostro catalogo e scopri la nostra selezione di chitarre elettriche di alta qualità.</p>
+        <img src="immagini/lavoratore.png" alt="Team Iron & Wood" style="max-width: 100%; width: 300px; display: block; margin: 0 auto 2rem; border: 2px solid #c9a227; border-radius: 8px;">
+        
+        <h3>Contatti e Dove Siamo</h3>
+        <p>Permettici di continuare! Supportaci nel continuare la nostra missione di offrire prodotti di qualità. Se hai un prodotto danneggiato o inutilizzato, contattaci alla mail riportata qui sotto per accordarci sulla vendita di quest'ultimo.</p>
+        <p><strong>Email: vendita@ironandwood.it</strong></p>
+        <p>Ci trovi in via Raffaello Sanzio, 14, a Rho. Aperto da Lunedì a Venerdì dalle 9:00 alle 18:00.</p>
+        
+        <div id="map"></div>
+
+        <p style="margin-top: 1.5rem;">Ogni prodotto che compriamo ci permette di poter continuare il nostro progetto. Insieme possiamo fare la differenza e continuare a crescere come azienda, offrendo sempre i migliori prezzi sul mercato. Grazie per il tuo supporto!</p>
+    </section>
+
+    <div id="cartOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Riepilogo Carrello</h2>
+            <div id="cartItems"></div>
+            <button class="action-btn" onclick="placeOrder()">Effettua ordine</button>
+            <button class="back-btn" onclick="closeCart()">Chiudi</button>
+        </div>
+    </div>
+
+    <div id="loginOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Login</h2>
+            <p>Inserisci il nome utente e una password valida (almeno 8 caratteri, maiuscole, minuscole, numeri e simboli).</p>
+            <label>Nome utente</label>
+            <input type="text" id="loginUsername" />
+            <label>Password</label>
+            <input type="password" id="loginPassword" />
+            <button class="action-btn" onclick="submitLogin()">Accedi</button>
+            <button class="back-btn" onclick="closeLogin()">Indietro</button>
+        </div>
+    </div>
+
+    <div id="paymentOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Dati di consegna e pagamento</h2>
+            <label>Metodo di pagamento</label>
+            <select id="payMethod">
+                <option value="">-- Seleziona --</option>
+                <option value="Carta di credito">Carta di credito</option>
+                <option value="PayPal">PayPal</option>
+                <option value="PostePay">PostePay</option>
+                <option value="Revolut">Revolut</option>
+            </select>
+            <label>Via della consegna</label>
+            <input type="text" id="deliveryAddress" />
+            <label>Nome</label>
+            <input type="text" id="customerName" />
+            <label>Cognome</label>
+            <input type="text" id="customerSurname" />
+            <label>Citofono</label>
+            <input type="text" id="intercom" />
+            <label>Numero di telefono</label>
+            <input type="text" id="customerPhone" />
+            <button class="action-btn" onclick="submitPayment()">Effettua pagamento</button>
+            <button class="back-btn" onclick="closePayment()">Annulla</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 - Iron&Wood</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        var cart = [];
+
+        function initCart() {
+            try {
+                var saved = localStorage.getItem('ironwoodCart');
+                if (saved) { cart = JSON.parse(saved); }
+            } catch (e) { cart = []; }
+            updateCartCount();
+        }
+
+        function saveCart() {
+            try { localStorage.setItem('ironwoodCart', JSON.stringify(cart)); } catch (e) {}
+        }
+
+        function updateCartCount() {
+            document.getElementById('cartCount').innerHTML = cart.length;
+        }
+
+        function openCart() {
+            if (cart.length === 0) {
+                alert('Il carrello è vuoto.');
+                return;
+            }
+            renderCart();
+            document.getElementById('cartOverlay').style.display = 'block';
+        }
+
+        function closeCart() {
+            document.getElementById('cartOverlay').style.display = 'none';
+        }
+
+        function renderCart() {
+            var html = '';
+            for (var i = 0; i < cart.length; i++) {
+                html += '<div class="cart-item"><strong>' + cart[i].modello + '</strong> <button class="back-btn" onclick="removeFromCart(' + i + ')">Rimuovi</button></div>';
+            }
+            html += '<p>Totale prodotti: ' + cart.length + '</p>';
+            document.getElementById('cartItems').innerHTML = html;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartCount();
+            renderCart();
+        }
+
+        function placeOrder() {
+            closeCart();
+            document.getElementById('loginOverlay').style.display = 'block';
+        }
+
+        function closeLogin() {
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+
+        function submitLogin() {
+            var username = document.getElementById('loginUsername').value;
+            var password = document.getElementById('loginPassword').value;
+            if (!username || !password) {
+                alert('Compila tutti i campi.');
+                return;
+            }
+            closeLogin();
+            document.getElementById('paymentOverlay').style.display = 'block';
+        }
+
+        function closePayment() {
+            document.getElementById('paymentOverlay').style.display = 'none';
+        }
+
+        function submitPayment() {
+            var method = document.getElementById('payMethod').value;
+            var address = document.getElementById('deliveryAddress').value;
+            var name = document.getElementById('customerName').value;
+            var surname = document.getElementById('customerSurname').value;
+            var intercom = document.getElementById('intercom').value;
+            var phone = document.getElementById('customerPhone').value;
+            if (!method || !address || !name || !surname || !intercom || !phone) {
+                alert('Compila tutti i campi.');
+                return;
+            }
+            closePayment();
+            alert('Ordine inviato. Grazie!');
+            cart = [];
+            saveCart();
+            updateCartCount();
+        }
+
+        function initMap() {
+            const myLat = 45.52932; 
+            const myLng = 9.04022;
+
+            var map = L.map('map', {
+                scrollWheelZoom: true
+            }).setView([myLat, myLng], 15);
+
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+            }).addTo(map);
+
+            L.marker([myLat, myLng]).addTo(map)
+                .bindPopup('<b>Iron & Wood</b><br>Via Raffaello Sanzio, 14<br>20017 Rho (MI)')
+                .openPopup();
+        }
+
+        window.onload = function() {
+            initCart();
+            initMap();
+        };
+    </script>
+</body>
+</html>
