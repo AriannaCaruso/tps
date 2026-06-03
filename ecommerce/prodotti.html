@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prodotti - Iron & Wood</title>
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .upload-container {
+            background: #1a1a1a;
+            border: 2px dashed #c9a227;
+            border-radius: 8px;
+            padding: 2rem;
+            text-align: center;
+            margin: 2rem 0;
+        }
+        .upload-box {
+            display: inline-block;
+            background: #2a2a2a;
+            border: 1px solid #c9a227;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px;
+            color: #e0e0e0;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+        .upload-box:hover {
+            background: #c9a227;
+            color: #1a1a1a;
+        }
+        input[type="file"] {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Iron & Wood</h1>
+    </header>
+    <nav>
+        <a href="index.html">Home</a>
+        <a href="prodotti.html">Prodotti</a>
+    </nav>
+    <div id="cartIcon" class="cart-icon" onclick="openCart()">🛒<span id="cartCount">0</span></div>
+    
+    <main>
+        <h2>I Nostri Prodotti</h2>
+        <p>Carica un file CSV dal tuo computer per visualizzare istantaneamente i dettagli del prodotto e sbloccare il catalogo.</p>
+        
+        <div class="upload-container">
+            <label class="upload-box">
+                📂 Seleziona e Carica File CSV
+                <input type="file" id="csvFileInput" accept=".csv" onchange="handleCsvUpload(this)">
+            </label>
+            <p id="fileNameDisplay" style="margin-top: 1rem; color: #aaa; font-size: 0.9rem;">Nessun file selezionato</p>
+        </div>
+        
+        <div id="productDetail" class="product-detail">
+            <div id="detailContent">
+                <p style="text-align: center; color: #888;">Carica un file CSV per visualizzare i dettagli del prodotto.</p>
+            </div>
+        </div>
+    </main>
+
+    <div id="cartOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Riepilogo Carrello</h2>
+            <div id="cartItems"></div>
+            <button class="action-btn" onclick="placeOrder()">Effettua ordine</button>
+            <button class="back-btn" onclick="closeCart()">Chiudi</button>
+        </div>
+    </div>
+
+    <div id="loginOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Login</h2>
+            <p>Inserisci il nome utente e una password valida (almeno 8 caratteri, maiuscole, minuscole, numeri e simboli).</p>
+            <label>Nome utente</label>
+            <input type="text" id="loginUsername" />
+            <label>Password</label>
+            <input type="password" id="loginPassword" />
+            <button class="action-btn" onclick="submitLogin()">Accedi</button>
+            <button class="back-btn" onclick="closeLogin()">Indietro</button>
+        </div>
+    </div>
+
+    <div id="paymentOverlay" class="overlay">
+        <div class="overlay-content">
+            <h2>Dati di consegna e pagamento</h2>
+            <label>Metodo di pagamento</label>
+            <select id="payMethod">
+                <option value="">-- Seleziona --</option>
+                <option value="Carta di credito">Carta di credito</option>
+                <option value="PayPal">PayPal</option>
+                <option value="PostePay">PostePay</option>
+                <option value="Revolut">Revolut</option>
+            </select>
+            <label>Via della consegna</label>
+            <input type="text" id="deliveryAddress" />
+            <label>Nome</label>
+            <input type="text" id="customerName" />
+            <label>Cognome</label>
+            <input type="text" id="customerSurname" />
+            <label>Citofono</label>
+            <input type="text" id="intercom" />
+            <label>Numero di telefono</label>
+            <input type="text" id="customerPhone" />
+            <button class="action-btn" onclick="submitPayment()">Effettua pagamento</button>
+            <button class="back-btn" onclick="closePayment()">Annulla</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2026 - Tutti i diritti riservati</p>
+    </footer>
+
+    <script>
+        var cart = [];
+        var currentProduct = null;
+
+        function getPriceForModel(model) {
+            if (!model) return 0;
+            var hash = 0;
+            for (var i = 0; i < model.length; i++) {
+                hash = (hash * 31 + model.charCodeAt(i)) % 1000;
+            }
+            return 500 + (hash % 501);
+        }
+
+        function initCart() {
+            var stored = null;
+            try { stored = localStorage.getItem('ironwoodCart'); } catch (e) { stored = null; }
+            if (stored) {
+                try { cart = JSON.parse(stored); } catch (e) { cart = []; }
+            }
+            updateCartCount();
+        }
+
+        function saveCart() {
+            try { localStorage.setItem('ironwoodCart', JSON.stringify(cart)); } catch (e) { }
+        }
+
+        window.onload = function() {
+            initCart();
+        };
+
+        function handleCsvUpload(input) {
+            var file = input.files[0];
+            if (!file) return;
+            
+            document.getElementById('fileNameDisplay').textContent = "File caricato: " + file.name;
+            
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                var text = e.target.result;
+                var lines = text.trim().split('\n');
+                if (lines.length < 2) {
+                    alert("Il file CSV selezionato è vuoto o non valido.");
+                    return;
+                }
+                
+                var headers = lines[0].split(';');
+                var values = lines[1].split(';');
+                var product = {};
+                
+                for (var i = 0; i < headers.length; i++) {
+                    product[headers[i].trim()] = values[i] ? values[i].trim() : '';
+                }
+                
+                product.prezzo = product.prezzo ? Number(product.prezzo) : getPriceForModel(product.modello);
+                currentProduct = product;
+                displayProductDetail(product);
+            };
+            reader.readAsText(file);
+        }
+
+        function addToCart() {
+            if (!currentProduct || !currentProduct.modello) {
+                alert('Carica e seleziona prima un prodotto.');
+                return;
+            }
+            cart.push(currentProduct);
+            saveCart();
+            updateCartCount();
+            alert('Prodotto aggiunto al carrello.');
+        }
+
+        function updateCartCount() {
+            document.getElementById('cartCount').innerHTML = cart.length;
+        }
+
+        function openCart() {
+            if (cart.length === 0) {
+                alert('Il carrello è vuoto. Carica un prodotto prima.');
+                return;
+            }
+            renderCart();
+            document.getElementById('cartOverlay').style.display = 'block';
+        }
+
+        function closeCart() {
+            document.getElementById('cartOverlay').style.display = 'none';
+        }
+
+        function renderCart() {
+            var html = '';
+            var totalPrice = 0;
+            for (var i = 0; i < cart.length; i++) {
+                var item = cart[i];
+                var priceText = item.prezzo ? ' - €' + Number(item.prezzo).toFixed(2) : '';
+                totalPrice += Number(item.prezzo || 0);
+                html += '<div class="cart-item"><strong>' + item.modello + '</strong>' + priceText + '<br>' + (item.corpo || '') + ' <button class="back-btn" onclick="removeFromCart(' + i + ')">Rimuovi</button></div>';
+            }
+            html += '<p style="margin-top: 1rem; color: #c9a227;">Totale prodotti: ' + cart.length + '</p>';
+            html += '<p style="margin-top: 0.5rem; color: #c9a227; font-weight: bold;">Totale spesa: €' + totalPrice.toFixed(2) + '</p>';
+            document.getElementById('cartItems').innerHTML = html;
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            saveCart();
+            updateCartCount();
+            renderCart();
+        }
+
+        function placeOrder() {
+            closeCart();
+            document.getElementById('loginOverlay').style.display = 'block';
+        }
+
+        function closeLogin() {
+            document.getElementById('loginOverlay').style.display = 'none';
+        }
+
+        function submitLogin() {
+            var username = document.getElementById('loginUsername').value;
+            var password = document.getElementById('loginPassword').value;
+            if (!username || !password) {
+                alert('Inserisci nome utente e password.');
+                return;
+            }
+            if (!validatePassword(password)) {
+                alert('La password deve essere lunga almeno 8 caratteri e contenere maiuscole, minuscole, numeri e simboli.');
+                return;
+            }
+            document.getElementById('loginOverlay').style.display = 'none';
+            document.getElementById('paymentOverlay').style.display = 'block';
+        }
+
+        function validatePassword(pass) {
+            if (pass.length < 8) return false;
+            var hasUpper = false, hasLower = false, hasNumber = false, hasSymbol = false;
+            for (var i = 0; i < pass.length; i++) {
+                var ch = pass.charAt(i);
+                if (ch >= 'A' && ch <= 'Z') hasUpper = true;
+                else if (ch >= 'a' && ch <= 'z') hasLower = true;
+                else if (ch >= '0' && ch <= '9') hasNumber = true;
+                else hasSymbol = true;
+            }
+            return hasUpper && hasLower && hasNumber && hasSymbol;
+        }
+
+        function closePayment() {
+            document.getElementById('paymentOverlay').style.display = 'none';
+        }
+
+        function submitPayment() {
+            var method = document.getElementById('payMethod').value;
+            var address = document.getElementById('deliveryAddress').value;
+            var name = document.getElementById('customerName').value;
+            var surname = document.getElementById('customerSurname').value;
+            var intercom = document.getElementById('intercom').value;
+            var phone = document.getElementById('customerPhone').value;
+            if (!method || !address || !name || !surname || !intercom || !phone) {
+                alert('Compila tutti i campi.');
+                return;
+            }
+            document.getElementById('paymentOverlay').style.display = 'none';
+            var totalPrice = cart.reduce(function(sum, item) {
+                return sum + Number(item.prezzo || 0);
+            }, 0);
+            
+            downloadReceiptPdf(cart, totalPrice, {
+                name: name,
+                surname: surname,
+                address: address,
+                intercom: intercom,
+                method: method
+            });
+            
+            alert('Ordine inviato. Grazie! Ricevuta PDF scaricata.');
+            cart = [];
+            saveCart();
+            updateCartCount();
+        }
+
+        function displayProductDetail(product) {
+            var html = '<h2 style="color: #c9a227; margin-bottom: 1rem;">' + (product.modello || 'Prodotto') + '</h2>';
+            if (product.immagini) {
+                html += '<img src="' + product.immagini + '" alt="' + product.modello + '" style="max-width: 100%; width: 300px; display: block; margin: 0 auto 2rem auto; border: 2px solid #c9a227; border-radius: 8px;">';
+            }
+            if (product.prezzo) {
+                html += '<div class="detail-row"><span class="detail-label">Prezzo:</span><span class="detail-value">€' + Number(product.prezzo).toFixed(2) + '</span></div>';
+            }
+            for (var key in product) {
+                if (product.hasOwnProperty(key) && key !== 'modello' && key !== 'immagini' && key !== 'prezzo' && product[key]) {
+                    var formattedLabel = key.replace(/_/g, ' ');
+                    formattedLabel = formattedLabel.charAt(0).toUpperCase() + formattedLabel.slice(1);
+                    html += '<div class="detail-row"><span class="detail-label">' + formattedLabel + ':</span><span class="detail-value">' + product[key] + '</span></div>';
+                }
+            }
+            html += '<button class="action-btn" onclick="addToCart()">Aggiungi al carrello</button>';
+            document.getElementById('detailContent').innerHTML = html;
+        }
+
+        function downloadReceiptPdf(items, total, customer) {
+            var itemRows = items.map(function(item, index) {
+                return '<div style="display:flex; justify-content:space-between; margin-bottom:5px;"><span>' + (index + 1) + '. ' + item.modello + '</span><span>EUR ' + Number(item.prezzo || 0).toFixed(2) + '</span></div>';
+            }).join('');
+            
+            var html = '<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"><title>Ricevuta</title></head><body style="font-family:sans-serif; padding:20px; background:#fff; color:#000;">' +
+                '<h2>Iron & Wood - Ricevuta d’ordine</h2>' +
+                '<hr>' +
+                '<p><strong>Cliente:</strong> ' + customer.name + ' ' + customer.surname + '</p>' +
+                '<p><strong>Indirizzo:</strong> ' + customer.address + ' (Cit: ' + customer.intercom + ')</p>' +
+                '<p><strong>Metodo Pagamento:</strong> ' + customer.method + '</p>' +
+                '<p><strong>Data:</strong> ' + new Date().toLocaleString() + '</p>' +
+                '<hr><h3>Prodotti:</h3>' + itemRows + '<hr>' +
+                '<h3>Totale: EUR ' + total.toFixed(2) + '</h3>' +
+                '</body></html>';
+                
+            var receiptWindow = window.open('', '_blank');
+            if (!receiptWindow) {
+                alert('Abilita i popup nel browser per stampare la ricevuta.');
+                return;
+            }
+            receiptWindow.document.open();
+            receiptWindow.document.write(html);
+            receiptWindow.document.close();
+            setTimeout(function() { receiptWindow.print(); }, 250);
+        }
+    </script>
+</body>
+</html>
