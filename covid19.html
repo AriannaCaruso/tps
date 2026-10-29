@@ -33,43 +33,41 @@
   </table>
   <script>
     function caricaDati() {
-      const xhr = new XMLHttpRequest();
-      const url = "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-andamento-nazionale.json";
-      xhr.open("GET", url, true);
-      xhr.responseType = "json";
-      xhr.onreadystatechange = function() {
-        if (xhr.readyState === 4 && xhr.status === 200) {
-          const obj = xhr.response;
-          const numeroChiavi = Object.keys(obj).length;
-          if (numeroChiavi > 0) {
-            const keys = Object.keys(obj[0]);
-            const thead = document.getElementById("intestazioneTabella");
-            const tbody = document.getElementById("corpoTabella");
-            thead.innerHTML = "";
-            tbody.innerHTML = "";
-            const rigaHead = document.createElement("tr");
-            for (let i = 0; i < keys.length; i++) {
-              const th = document.createElement("th");
-              th.textContent = keys[i];
-              rigaHead.appendChild(th);
-            }
-            thead.appendChild(rigaHead);
-            for (let i = 0; i < obj.length; i++) {
-              const riga = document.createElement("tr");
-              const elementoGiorno = obj[i];
-              for (let j = 0; j < keys.length; j++) {
-                const cella = document.createElement("td");
-                const nomeChiave = keys[j];              
-                cella.textContent = elementoGiorno[nomeChiave];
-                riga.appendChild(cella);
-              }
-              tbody.appendChild(riga);
-            }
-          }
+    const xhr = new XMLHttpRequest();
+    const url = "https://raw.githubusercontent.com/pcm-dpc/COVID-19/master/dati-json/dpc-covid19-ita-andamento-nazionale.json";
+    xhr.open("GET", url, true);
+    xhr.responseType = "json";
+    xhr.onreadystatechange = function() {
+    const obj = xhr.response;
+    const numeroChiavi = Object.keys(obj).length;
+    if (numeroChiavi > 0) {
+      const keys = Object.keys(obj[0]);
+      const thead = document.getElementById("intestazioneTabella");
+      const tbody = document.getElementById("corpoTabella");
+      thead.innerHTML = "";
+      tbody.innerHTML = "";
+      const rigaHead = document.createElement("tr");
+      for (let i = 0; i < keys.length; i++) {
+        const th = document.createElement("th");
+        th.textContent = keys[i];
+        rigaHead.appendChild(th);
+      }
+      thead.appendChild(rigaHead);
+      for (let i = 0; i < obj.length; i++) {
+        const riga = document.createElement("tr");
+        const elementoGiorno = obj[i];
+        for (let j = 0; j < keys.length; j++) {
+          const cella = document.createElement("td");
+          const nomeChiave = keys[j];            
+          cella.textContent = elementoGiorno[nomeChiave];
+          riga.appendChild(cella);
         }
-      };
-      xhr.send();
+        tbody.appendChild(riga);
+      }
     }
+  }
+  xhr.send();
+  }
   </script>
 </body>
 </html>
